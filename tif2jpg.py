@@ -1,35 +1,77 @@
 import os
+import sys
 from pathlib import Path
 from PIL import Image
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-createThumbnail = messagebox.askyesno("Question","Sollen Thumbnails erstellt werden?")
-if createThumbnail == False:
-	quit()
-thumbnailsize = 768, 768
+interfaceBool = True
 
 src = "M:/Brockytony/!_brockytony/Bilder"
 dest = "C:/Users/felix.baumgaertner/Desktop/test"
 
-root = tk.Tk()
-root.withdraw()
-src = filedialog.askdirectory(initialdir=src)
-if src == "":
-	print("The program will end because there is no source directory given.")
-	quit()
-dest = filedialog.askdirectory(initialdir=dest)
-if dest == "":
-	print("The program will end because there is no destination directory given.")
-	quit()
-root.destroy()
+thumbnailsize = 1024, 1024
 
 
+
+# user interface config setup
+
+if interfaceBool == True:
+	tk.Tk().withdraw()
+
+	messagebox.showinfo("tif2jpg", "1. Declare source folder \n\n2. Declare destination folder \n\n3. Enjoy automatic tif to jpg conversion ")
+
+	src = filedialog.askdirectory(initialdir=src)
+	if src == "":
+		messagebox.showerror("tif2jpg", "Error: no source directory given")
+		quit("The program will end because there was no source directory given.")
+
+	dest = filedialog.askdirectory(initialdir=dest)
+	if dest == "":
+		messagebox.showerror("tif2jpg", "Error: no destination directory given")
+		quit("The program will end because there was no destination directory given.")
+
+
+
+# progress bar setup
+
+def progress(count, total, suffix=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+
+    percents = round(100.0 * count / float(total), 1)
+    bar = '#' * filled_len + '-' * (bar_len - filled_len)
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', suffix))
+    sys.stdout.flush()
+
+def analyse(src, filetype):
+	sum = 0
+	for filepath in Path(src).glob('**/*.' + filetype):
+		sum += 1
+	
+	return sum
+
+sum_i = 0
+sum = analyse(src, "tif")
+sum += analyse(src, "tiff")
+
+
+
+# main function
 
 def duplicateFiletype(src, filetype):
+	global sum_i, sum
+	
 	for filepath in Path(src).glob('**/*.' + filetype):
 		filepathREL = os.path.relpath(filepath, src)
 		dirs = os.path.dirname(filepathREL)
+		
+		searchFiletype = "tif" if filetype == "tiff" or filetype == "tif" else filetype
+		if os.path.basename(dirs).lower().find(searchFiletype) != -1:
+			filepathTEMP = os.path.dirname(filepathREL)
+			filepathREL = os.path.dirname(filepathTEMP) + "/" + os.path.basename(filepathREL)
+			dirs = os.path.dirname(dirs)
 		
 		if os.path.isdir(dest + "/" + dirs) == False:
 			os.makedirs(dest + "/" + dirs)
@@ -38,7 +80,7 @@ def duplicateFiletype(src, filetype):
 		
 		filepathNEW = dest + "/" + filepathREL.replace("." + filetype, ".jpg")
 		
-		if createThumbnail == True and os.path.exists(filepathNEW) == False:
+		if os.path.exists(filepathNEW) == False:
 			im = Image.open(filepath)
 			im.thumbnail(thumbnailsize, Image.ANTIALIAS)
 			
@@ -50,10 +92,22 @@ def duplicateFiletype(src, filetype):
 			im.save(filepathNEW)
 			
 			print("File created: " + filepathNEW)
+		
+		progress(sum_i, sum)
+		sum_i += 1
 
+
+
+# run
 
 duplicateFiletype(src, "tiff")
 duplicateFiletype(src, "tif")
 
 
-print("Done!")
+
+# clean end
+
+if interfaceBool == True:
+	messagebox.showinfo("tif2jpg", "All tif files were successfully converted.")
+	
+	tk.Tk().destroy()
