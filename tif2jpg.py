@@ -8,8 +8,8 @@ from tkinter import filedialog, messagebox
 # False for command line use only
 interfaceBool = True
 
-src = "" # /path-to/images/tif
-dest = "" # /path-to/images/jpg
+src = "//ds1517/Marketing/Brockytony/!_brockytony/Bilder"
+dest = "//ds1517/Bildmaterial"
 
 thumbnailsize = 1024, 1024
 
@@ -47,22 +47,22 @@ def progress(count, total, suffix=''):
     sys.stdout.flush()
 
 def analyse(src, filetype):
-	sum = 0
+	imgSum = 0
 	for filepath in Path(src).glob('**/*.' + filetype):
-		sum += 1
+		imgSum += 1
 	
-	return sum
+	return imgSum
 
-sum_i = 0
-sum = analyse(src, "tif")
-sum += analyse(src, "tiff")
+imgSum_i = 0
+imgSum = analyse(src, "tif")
+imgSum += analyse(src, "tiff")
 
 
 
 # main function
 
 def duplicateFiletype(src, filetype):
-	global sum_i, sum
+	global imgSum_i, imgSum
 	
 	for filepath in Path(src).glob('**/*.' + filetype):
 		filepathREL = os.path.relpath(filepath, src)
@@ -94,8 +94,8 @@ def duplicateFiletype(src, filetype):
 			
 			print("File created: " + filepathNEW)
 		
-		progress(sum_i, sum)
-		sum_i += 1
+		progress(imgSum_i, imgSum)
+		imgSum_i += 1
 
 
 
