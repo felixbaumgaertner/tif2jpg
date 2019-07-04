@@ -5,10 +5,11 @@ from PIL import Image
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
+# False for command line use only
 interfaceBool = True
 
-src = "M:/Brockytony/!_brockytony/Bilder"
-dest = "C:/Users/felix.baumgaertner/Desktop/test"
+src = "" # /path-to/images/tif
+dest = "" # /path-to/images/jpg
 
 thumbnailsize = 1024, 1024
 
