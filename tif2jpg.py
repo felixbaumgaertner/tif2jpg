@@ -8,8 +8,8 @@ from tkinter import filedialog, messagebox
 # False for command line use only
 interfaceBool = True
 
-src = "//ds1517/Marketing/Brockytony/!_brockytony/Bilder"
-dest = "//ds1517/Bildmaterial"
+src = "//ds1517/sourcefolder"
+dest = "//ds1517/destinationfolder"
 
 thumbnailsize = 1024, 1024
 
